@@ -1,0 +1,136 @@
+class JogoUrso {
+    constructor() {
+        this.urso = {
+            posicao: 0,
+            velocidade: 1,
+            vidas: 3
+        };
+        this.bananasVoadoras = [];
+        this.outrosObstaculos = [];
+        this.itensBonus = [];
+        this.limiteJogo = 100;
+        this.velocidadeBanana = 2;
+        this.velocidadeObstaculo = 1;
+        this.velocidadeItemBonus = 1;
+    }
+
+    iniciar() {
+        this.loopPrincipal();
+    }
+
+    loopPrincipal() {
+        const intervaloLoop = setInterval(() => {
+            // Mover o urso
+            this.urso.posicao += this.urso.velocidade;
+
+            // Criar novos obstáculos e itens bônus aleatoriamente
+            if (Math.random() < 0.1) {
+                this.criarBananaVoadora();
+            }
+            if (Math.random() < 0.05) {
+                this.criarOutroObstaculo();
+            }
+            if (Math.random() < 0.05) {
+                this.criarItemBonus();
+            }
+
+            // Mover bananas voadoras
+            this.moverBananasVoadoras();
+
+            // Mover outros obstáculos
+            this.moverOutrosObstaculos();
+
+            // Mover itens bônus
+            this.moverItensBonus();
+
+            // Verificar colisões
+            if (this.verificarColisao()) {
+                this.urso.vidas--;
+                if (this.urso.vidas <= 0) {
+                    console.log("Você ficou sem vidas! Fim do jogo.");
+                    clearInterval(intervaloLoop);
+                } else {
+                    console.log(`Você foi atingido! Você tem ${this.urso.vidas} vidas restantes.`);
+                }
+            }
+
+            // Verificar vitória
+            if (this.urso.posicao >= this.limiteJogo) {
+                console.log("Você conseguiu escapar das bananas voadoras! Parabéns!");
+                clearInterval(intervaloLoop);
+            }
+
+            // Imprimir estado do jogo (para fins de teste)
+            console.log("Urso:", this.urso.posicao, "Bananas Voadoras:", this.bananasVoadoras.map(banana => banana.posicao));
+
+        }, 100); // Loop a cada 100ms
+    }
+
+    criarBananaVoadora() {
+        this.bananasVoadoras.push({ posicao: 0 });
+    }
+
+    criarOutroObstaculo() {
+        this.outrosObstaculos.push({ posicao: 0 });
+    }
+
+    criarItemBonus() {
+        this.itensBonus.push({ posicao: 0 });
+    }
+
+    moverBananasVoadoras() {
+        for (let i = 0; i < this.bananasVoadoras.length; i++) {
+            this.bananasVoadoras[i].posicao += this.velocidadeBanana;
+            if (this.bananasVoadoras[i].posicao >= this.limiteJogo) {
+                this.bananasVoadoras.splice(i, 1);
+                i--;
+            }
+        }
+    }
+
+    moverOutrosObstaculos() {
+        for (let i = 0; i < this.outrosObstaculos.length; i++) {
+            this.outrosObstaculos[i].posicao += this.velocidadeObstaculo;
+            if (this.outrosObstaculos[i].posicao >= this.limiteJogo) {
+                this.outrosObstaculos.splice(i, 1);
+                i--;
+            }
+        }
+    }
+
+    moverItensBonus() {
+        for (let i = 0; i < this.itensBonus.length; i++) {
+            this.itensBonus[i].posicao += this.velocidadeItemBonus;
+            if (this.itensBonus[i].posicao >= this.limiteJogo) {
+                this.itensBonus.splice(i, 1);
+                i--;
+            }
+        }
+    }
+
+    verificarColisao() {
+        for (let i = 0; i < this.bananasVoadoras.length; i++) {
+            if (this.bananasVoadoras[i].posicao === this.urso.posicao) {
+                this.bananasVoadoras.splice(i, 1);
+                return true;
+            }
+        }
+        for (let i = 0; i < this.outrosObstaculos.length; i++) {
+            if (this.outrosObstaculos[i].posicao === this.urso.posicao) {
+                this.outrosObstaculos.splice(i, 1);
+                return true;
+            }
+        }
+        for (let i = 0; i < this.itensBonus.length; i++) {
+            if (this.itensBonus[i].posicao === this.urso.posicao) {
+                this.itensBonus.splice(i, 1);
+                return false; // Retorna false para não perder vida se colidir com item bônus
+            }
+        }
+        return false;
+    }
+}
+
+// Iniciar o jogo
+const jogo = new JogoUrso();
+jogo.iniciar();
