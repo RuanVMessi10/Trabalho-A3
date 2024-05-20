@@ -1,0 +1,189 @@
+Fase_01
+
+npm install phaser
+/jogo-urso
+│
+├── index.html
+├── main.js
+├── assets/
+│   ├── images/
+│   │   ├── urso.png
+│   │   ├── banana.png
+│   │   ├── obstaculo.png
+│   │   ├── itemBonus.png
+│   │   ├── background.png
+│   └── audio/
+│       ├── background-music.mp3
+│       ├── collision.mp3
+│       ├── bonus.mp3
+└── package.json
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo Urso</title>
+    <script src="node_modules/phaser/dist/phaser.min.js"></script>
+    <script defer src="main.js"></script>
+</head>
+<body>
+</body>
+</html>
+import Phaser from 'phaser';
+
+class JogoUrso extends Phaser.Scene {
+    constructor() {
+        super({ key: 'JogoUrso' });
+    }
+
+    preload() {
+        this.load.image('urso', 'assets/images/urso.png');
+        this.load.image('banana', 'assets/images/banana.png');
+        this.load.image('obstaculo', 'assets/images/obstaculo.png');
+        this.load.image('itemBonus', 'assets/images/itemBonus.png');
+        this.load.image('background', 'assets/images/background.png');
+    }
+
+    create() {
+        this.add.image(400, 300, 'background');
+
+        this.urso = this.physics.add.sprite(100, 300, 'urso');
+        this.urso.setCollideWorldBounds(true);
+        this.urso.vidas = 3;
+
+        this.bananasVoadoras = this.physics.add.group();
+        this.outrosObstaculos = this.physics.add.group();
+        this.itensBonus = this.physics.add.group();
+
+        this.physics.add.collider(this.urso, this.bananasVoadoras, this.handleCollision, null, this);
+        this.physics.add.collider(this.urso, this.outrosObstaculos, this.handleCollision, null, this);
+        this.physics.add.overlap(this.urso, this.itensBonus, this.collectBonus, null, this);
+
+        this.time.addEvent({
+            delay: 1000,
+            callback: this.spawnBananaVoadora,
+            callbackScope: this,
+            loop: true
+        });
+
+        this.time.addEvent({
+            delay: 2000,
+            callback: this.spawnOutroObstaculo,
+            callbackScope: this,
+            loop: true
+        });
+
+        this.time.addEvent({
+            delay: 3000,
+            callback: this.spawnItemBonus,
+            callbackScope: this,
+            loop: true
+        });
+
+        this.cursors = this.input.keyboard.createCursorKeys();
+    }
+
+    update() {
+        if (this.cursors.left.isDown) {
+            this.urso.setVelocityX(-160);
+        } else if (this.cursors.right.isDown) {
+            this.urso.setVelocityX(160);
+        } else {
+            this.urso.setVelocityX(0);
+        }
+
+        if (this.cursors.up.isDown) {
+            this.urso.setVelocityY(-160);
+        } else if (this.cursors.down.isDown) {
+            this.urso.setVelocityY(160);
+        } else {
+            this.urso.setVelocityY(0);
+        }
+
+        if (this.urso.x >= 800) {
+            this.scene.pause();
+            console.log("Você conseguiu escapar das bananas voadoras! Parabéns!");
+        }
+    }
+
+    spawnBananaVoadora() {
+        const x = Phaser.Math.Between(0, 800);
+        const y = 0;
+        const banana = this.bananasVoadoras.create(x, y, 'banana');
+        banana.setVelocityY(200);
+    }
+
+    spawnOutroObstaculo() {
+        const x = Phaser.Math.Between(0, 800);
+        const y = 0;
+        const obstaculo = this.outrosObstaculos.create(x, y, 'obstaculo');
+        obstaculo.setVelocityY(150);
+    }
+
+    spawnItemBonus() {
+        const x = Phaser.Math.Between(0, 800);
+        const y = 0;
+        const itemBonus = this.itensBonus.create(x, y, 'itemBonus');
+        itemBonus.setVelocityY(100);
+    }
+
+    handleCollision(urso, obstacle) {
+        obstacle.destroy();
+        this.urso.vidas -= 1;
+        if (this.urso.vidas <= 0) {
+            this.scene.pause();
+            console.log("Você ficou sem vidas! Fim do jogo.");
+        } else {
+            console.log(Você foi atingido! Você tem ${this.urso.vidas} vidas restantes.);
+        }
+    }
+
+    collectBonus(urso, bonus) {
+        bonus.destroy();
+        console.log("Você coletou um item bônus!");
+    }
+}
+
+const config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 0 },
+            debug: false
+        }
+    },
+    scene: JogoUrso
+};
+
+const game = new Phaser.Game(config);
+class JogoUrso extends Phaser.Scene {
+    constructor() {
+        super({ key: 'JogoUrso' });
+    }
+
+    preload() {
+        this.load.image('urso', 'assets/images/urso.png');
+        this.load.image('banana', 'assets/images/banana.png');
+        this.load.image('obstaculo', 'assets/images/obstaculo.png');
+        this.load.image('itemBonus', 'assets/images/itemBonus.png');
+        this.load.image('background', 'assets/images/background.png');
+    }
+
+    create() {
+        // Cenário
+        this.background = this.add.image(400, 300, 'background');
+
+        // Personagem Principal
+        this.urso = this.physics.add.sprite(100, 300, 'urso');
+        this.urso.setCollideWorldBounds(true);
+        this.urso.vidas = 3;
+
+        // Grupo de Objetos
+        this.bananasVoadoras = this.physics.add.group();
+        this.outrosObstaculos = this.physics.add.group();
+        this.itensBonus = this.physics.add.group();
+    }
+}
