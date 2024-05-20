@@ -1,0 +1,16 @@
+# Plano de Monetização
+
+## Anúncios
+- Utilizaremos a rede de anúncios AdMob para exibir banners e anúncios intersticiais.
+- Os banners serão exibidos na parte inferior da tela durante o jogo.
+- Anúncios intersticiais serão exibidos entre as fases do jogo.
+
+## Compras no Aplicativo
+- Itens disponíveis para compra:
+  - Pacote de moedas (100 moedas por $0.99)
+  - Personagem exclusivo ($1.99)
+  - Skin especial ($0.99)
+- As compras no aplicativo serão integradas através das APIs da Google Play Store e Apple App Store.
+
+## Vendas de Mercadorias
+- Planejamos vender camisetas e brinquedos relacionados ao jogo através de nossa loja online.
